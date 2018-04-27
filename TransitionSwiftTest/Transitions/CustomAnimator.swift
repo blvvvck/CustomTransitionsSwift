@@ -30,6 +30,7 @@ class CustomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         
         let container = transitionContext.containerView
         var artwork: UIImageView!
+        var background: UIView!
         
         guard let fromView = transitionContext.view(forKey: UITransitionContextViewKey.from) else { return }
         guard let toView = transitionContext.view(forKey: UITransitionContextViewKey.to) else { return }
@@ -42,21 +43,26 @@ class CustomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         
         if let detailVC = toViewController as? ViewController {
             artwork = detailVC.artworkImageView
-            
             artwork.image = image
             artwork.alpha = 0
+            background = detailVC.backgroundView
+            background.alpha = 1
         } else if let detailVC = fromViewController as? ViewController {
             artwork = detailVC.artworkImageView
-            
-           artwork.image = image
+            artwork.image = image
             artwork.alpha = 0
+            background = detailVC.backgroundView
+            background.alpha = 1
             
         }
         
         
         let transitionImageView = UIImageView(frame: isPresenting ? originFrame : artwork.frame)
         transitionImageView.image = image
+        let transitionBackgorundView = UIView(frame: isPresenting ? originFrame : background.frame)
+        transitionBackgorundView.backgroundColor = background.backgroundColor
         
+        //container.addSubview(transitionBackgorundView)
         container.addSubview(transitionImageView)
         
         toView.frame = isPresenting ?  CGRect(x: 0, y: 0, width: toView.frame.width, height: toView.frame.height) : toView.frame
@@ -66,12 +72,15 @@ class CustomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         
         UIView.animate(withDuration: duration, animations: {
             transitionImageView.frame = self.isPresenting ? artwork.frame : self.originFrame
+            transitionBackgorundView.frame = self.isPresenting ? artwork.frame : self.originFrame
             detailView.frame = self.isPresenting ? fromView.frame : CGRect(x:0, y: 0, width: toView.frame.width, height: toView.frame.height)
             detailView.alpha = self.isPresenting ? 1 : 0
         }, completion: { (finished) in
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
             transitionImageView.removeFromSuperview()
+            transitionBackgorundView.removeFromSuperview()
             artwork.alpha = 1
+            background.alpha = 1
         })
     }
 }

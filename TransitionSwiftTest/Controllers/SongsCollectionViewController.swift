@@ -79,9 +79,11 @@ extension SongsCollectionViewController: UINavigationControllerDelegate {
         switch operation {
         case .push:
             self.customInteractor = CustomInteractor(attachTo: toVC as! ViewController)
-            return CustomAnimator(duration: 2, isPresenting: true, originFrame: frame, image: song.artwork)
-        default:
+            return CustomAnimator(duration: TimeInterval(UINavigationControllerHideShowBarDuration), isPresenting: true, originFrame: frame, image: song.artwork)
+        case .pop:
             return CustomAnimator(duration: TimeInterval(UINavigationControllerHideShowBarDuration), isPresenting: false, originFrame: frame, image: song.artwork)
+        default:
+            return nil
 
         }
     }

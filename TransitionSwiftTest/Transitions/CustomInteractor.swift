@@ -15,6 +15,8 @@ class CustomInteractor: UIPercentDrivenInteractiveTransition {
     var shouldCompleteTransition = false
     var transitionInProgress = false
     var viewTranslitonsSum: CGFloat = 0
+    let dismissConstant: CGFloat = 0.7
+    let animateDuration = 0.5
     
     init?(attachTo viewController : ViewController) {
         if let nav = viewController.navigationController {
@@ -37,7 +39,17 @@ class CustomInteractor: UIPercentDrivenInteractiveTransition {
         guard let image = viewController.artworkImageView else { return }
         let viewTranslation = gesture.translation(in: gesture.view?.superview)
 
+        //Comment this
         image.center = CGPoint(x: image.center.x, y: viewTranslation.y + image.center.y)
+        //Uncomment this
+        //var progress1 = viewTranslation.y / self.navigationController.view.frame.height
+        
+        //Comment this 5 lines
+        UIView.animate(withDuration: 0.5) { [weak self] in
+            guard let strongSelf = self else { return }
+            let backgroundAlpha = (gesture.view?.superview?.center.y)! - image.center.y
+            strongSelf.viewController.backgroundView.alpha = backgroundAlpha
+        }
 
         switch gesture.state {
         case .began:
@@ -45,9 +57,14 @@ class CustomInteractor: UIPercentDrivenInteractiveTransition {
             navigationController.popViewController(animated: true)
 
         case .changed:
+            //Uncoment this 2 lines
+            //shouldCompleteTransition = progress1 > 0.5
+            //update(progress1)
+            
+            //Comment this 3 lines
             viewTranslitonsSum += viewTranslation.y
             var progress: CGFloat = abs(viewTranslitonsSum / 400)
-            shouldCompleteTransition = progress > 0.7
+            shouldCompleteTransition = progress > dismissConstant
             return
         case .cancelled:
             transitionInProgress = false
